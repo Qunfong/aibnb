@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Your application service
+  app:
+    image: openjdk:17-jdk-slim
+    ports:
+      - 8000:8000
+    working_dir: /app
+    volumes:
+      - ./:/app  # Replace with path to your application code
+
+
+  # Elasticsearch
+  elasticsearch:
+    image: elasticsearch:7.9.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  # Logstash
+  logstash:
+    image: logstash:7.9.1
+    container_name: logstash
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/config/logstash.conf  # Mount your Logstash config file
+    depends_on:
+      - elasticsearch
+
+  # Kibana
+  kibana:
+    image: kibana:7.9.1
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+volumes:
+  elasticsearch-data: { }  # Persistent volume for Elasticsearch data
