@@ -3,12 +3,14 @@ version: '3.8'
 services:
   # Your application service
   app:
-    image: openjdk:17-jdk-slim
+    container_name: app
     ports:
-      - 8000:8000
-    working_dir: /app
+      - 8080:8080
+    build:
+        context: .
+        dockerfile: Dockerfile
     volumes:
-      - ./:/app  # Replace with path to your application code
+      - elasticsearch-data:/app  # Replace with path to your application code
 
 
   # Elasticsearch
